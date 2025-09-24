@@ -76,7 +76,7 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
     setIsLoading(true);
     //https://testdeploysalesmanai3-production.up.railway.app/chat
     try {
-      const res = await fetch("http://localhost:5000/chat", {
+      const res = await fetch("https://testdeploysalesmanai3.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId.current, message: messageContent }),
