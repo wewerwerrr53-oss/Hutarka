@@ -68,7 +68,7 @@ export const Chat: React.FC<ChatProps> = ({ isDark }) => {
           </motion.div>
           <div>
             <h1 className="text-xl font-bold text-white">Hutarka</h1>
-            <p className="text-blue-100 text-sm">AI-помощник готов к работе</p>
+            <p className="text-blue-100 text-sm">малады беларускі ІІ, які яшчэ вучыцца</p>
           </div>
         </motion.div>
 

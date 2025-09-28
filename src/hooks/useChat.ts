@@ -74,9 +74,9 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
     onMessagesUpdate?.(updated); // ✅ обновляем только тут
 
     setIsLoading(true);
-    //https://testdeploysalesmanai3-production.up.railway.app/chat
-    try {
-      const res = await fetch("https://testdeploysalesmanai3.onrender.com", {
+    //https://testdeploysalesmanai3-production.up.railway.app/chat   http://localhost:5000/chat   https://testdeploysalesmanai3.onrender.com
+    try { 
+      const res = await fetch("https://testdeploysalesmanai3.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId.current, message: messageContent }),
