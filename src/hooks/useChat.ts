@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
+
 export interface FileAttachment {
   id: string;
   name: string;
@@ -26,8 +27,9 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
-  // 🔑 Инициализация аутентификации
+  // 🔑 Инициализация аутентификации   https://testdeploysalesmanai3.onrender.com/auth/init
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem("auth_token");
@@ -47,6 +49,31 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
     };
     initAuth();
   }, []);
+
+
+
+//========================================
+useEffect(() => {
+  // Проверяем, не загружен ли уже скрипт
+  if ((window as any).grecaptcha || document.querySelector(`script[src*="recaptcha"]`)) {
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+
+  return () => {
+    if (document.head.contains(script)) {
+      document.head.removeChild(script);
+    }
+  };
+}, []);
+//============================================
+
+
 
   // Сброс сообщений при смене чата
   useEffect(() => {
@@ -89,15 +116,61 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
 
     setIsLoading(true);
     try {
+
+      // 🔒 Получаем reCAPTCHA токен
+  let recaptchaToken: string | null = null;
+  
+  // Ждём, пока reCAPTCHA инициализируется
+  await new Promise<void>((resolve) => {
+    const checkReady = () => {
+      if ((window as any).grecaptcha) {
+        resolve();
+      } else {
+        setTimeout(checkReady, 50);
+      }
+    };
+    checkReady();
+  });
+
+  recaptchaToken = await (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "chat" });
+
       // ✅ Отправляем БЕЗ user_id, только с токеном в заголовке
       const res = await fetch("http://localhost:5000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${authToken}`, // 🔐
+          "Authorization": `Bearer ${authToken}`, // 
         },
-        body: JSON.stringify({ message: messageContent }), // ❌ убран user_id
+        body: JSON.stringify({ message: messageContent, recaptcha_token: recaptchaToken,}), // 
       });
+
+      if (res.status === 429) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: errorData.message || "Слишком много запросов. Подождите немного.",
+          timestamp: new Date(),
+        };
+        const withError = [...updated, errorMessage];
+        setMessages(withError);
+        onMessagesUpdate?.(withError);
+        return; //
+      }
+    
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: errorData.message || "Неизвестная ошибка сервера.",
+          timestamp: new Date(),
+        };
+        const withError = [...updated, errorMessage];
+        setMessages(withError);
+        onMessagesUpdate?.(withError);
+        return;
+      }
 
       const data = await res.json();
       const botMessage: Message = {
