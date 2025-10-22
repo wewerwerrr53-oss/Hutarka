@@ -34,7 +34,7 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
     const initAuth = async () => {
       const savedToken = localStorage.getItem("auth_token");
       try {
-        const res = await fetch("http://hutarka.pro/auth/init", {
+        const res = await fetch("https://hutarka.pro/auth/init", {
           method: "POST",
           headers: savedToken ? { "Authorization": `Bearer ${savedToken}` } : {},
         });
@@ -135,7 +135,7 @@ useEffect(() => {
   recaptchaToken = await (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "chat" });
 
       // ✅ Отправляем БЕЗ user_id, только с токеном в заголовке
-      const res = await fetch("http://hutarka.pro/chat", {
+      const res = await fetch("https://hutarka.pro/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
