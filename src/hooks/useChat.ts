@@ -29,12 +29,12 @@ export const useChat = ({ messages: initialMessages, onMessagesUpdate }: UseChat
   const [authToken, setAuthToken] = useState<string | null>(null);
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
-  // 🔑 Инициализация аутентификации   https://testdeploysalesmanai3.onrender.com/auth/init
+  // 🔑 Инициализация аутентификации  https://hutarka.pro/auth/init  https://testdeploysalesmanai3.onrender.com/auth/init  http://127.0.0.1:5000
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem("auth_token");
       try {
-        const res = await fetch("https://hutarka.pro/auth/init", {
+        const res = await fetch("https://testdeploysalesmanai3.onrender.com/auth/init", { 
           method: "POST",
           headers: savedToken ? { "Authorization": `Bearer ${savedToken}` } : {},
         });
@@ -135,7 +135,7 @@ useEffect(() => {
   recaptchaToken = await (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "chat" });
 
       // ✅ Отправляем БЕЗ user_id, только с токеном в заголовке
-      const res = await fetch("https://hutarka.pro/chat", {
+      const res = await fetch("https://testdeploysalesmanai3.onrender.com/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
