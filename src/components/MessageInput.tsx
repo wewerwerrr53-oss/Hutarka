@@ -39,44 +39,51 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoa
 
   return (
     <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="border-t border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4"
-    >
-      <form onSubmit={handleSubmit} className="flex space-x-3">
-        <div className="flex-1 space-y-3">
-          <FileUpload
-            onFilesSelect={handleFilesSelect}
-            selectedFiles={selectedFiles}
-            onRemoveFile={handleRemoveFile}
-          />
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Напишите ваше сообщение..."
-            disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
-            rows={1}
-            style={{ minHeight: '48px', maxHeight: '120px' }}
-            onInput={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = 'auto';
-              target.style.height = Math.min(target.scrollHeight, 120) + 'px';
-            }}
-          />
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          type="submit"
-          disabled={(!message.trim() && selectedFiles.length === 0) || isLoading}
-          className="px-4 py-3 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          <Send className="w-5 h-5" />
-        </motion.button>
-      </form>
-    </motion.div>
+    initial={{ y: 100, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ duration: 0.5 }}
+    className="border-t border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4"
+  >
+    <form onSubmit={handleSubmit} className="relative space-y-3">
+      <FileUpload
+        onFilesSelect={handleFilesSelect}
+        selectedFiles={selectedFiles}
+        onRemoveFile={handleRemoveFile}
+      />
+  
+  <div className="relative w-full">
+  <textarea
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    onKeyPress={handleKeyPress}
+    placeholder="Напишите ваша сообщение…"
+    disabled={isLoading}
+    className="w-full px-4 py-3 pl-4 pr-20 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200"
+    rows={1}
+    style={{
+      minHeight: '48px',
+      maxHeight: '120px',
+      width: 'calc(100% - 60px)', // ← поле чуть короче справа
+    }}
+    onInput={(e) => {
+      const target = e.target as HTMLTextAreaElement;
+      target.style.height = 'auto';
+      target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+    }}
+  />
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    type="submit"
+    disabled={(!message.trim() && selectedFiles.length === 0) || isLoading}
+    className="absolute bottom-3 right-[85px] p-2 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md"
+    aria-label="Адправіць"
+  >
+    <Send className="w-4 h-4" />
+  </motion.button>
+</div>
+
+    </form>
+  </motion.div>
   );
 };
