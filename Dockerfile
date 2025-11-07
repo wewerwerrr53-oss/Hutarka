@@ -7,6 +7,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
+ARG VITE_RECAPTCHA_SITE_KEY
+ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
+
 RUN npm run build
 
 # Этап 2: Запуск Express-сервера
@@ -20,6 +24,9 @@ RUN npm ci --omit=dev
 # Копируем сборку
 COPY --from=builder /app/dist ./dist
 COPY server.js ./
+
+ARG VITE_RECAPTCHA_SITE_KEY
+ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
 
 # Устанавливаем переменные окружения
 ENV NODE_ENV=production
