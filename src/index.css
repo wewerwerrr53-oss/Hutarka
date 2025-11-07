@@ -2,3 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
+.grecaptcha-badge {
+    display: none !important;
+  }
